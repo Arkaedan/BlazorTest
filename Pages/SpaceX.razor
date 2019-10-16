@@ -4,30 +4,57 @@
 @page "/spacex"
 
 <h1>SpaceX</h1>
-<h3>Next Launch</h3>
-@if (NextLaunch is null)
-{
-    <p>Loading...</p>
-}
-else
-{
-    <ul>
-        <li>Mission Name: @NextLaunch.mission_name</li>
-        <li>Launch Date: @NextLaunch.launch_date_utc.ToString("dddd, dd MMMM yyyy HH:mm:ss") UTC</li>
-        <li>Vehicle: @NextLaunch.rocket.rocket_name</li>
-    </ul>
-    
-}
+<div>
+    <h3>Next Launch</h3>
+    @if (NextLaunch is null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <ul>
+            <li>Mission Name: @NextLaunch.mission_name</li>
+            <li>Launch Date: @NextLaunch.launch_date_utc.ToString("dddd, dd MMMM yyyy HH:mm:ss") UTC</li>
+            <li>Vehicle: @NextLaunch.rocket.rocket_name</li>
+        </ul>
+
+    }
+</div>
+<div>
+    <h3>Upcoming Launches</h3>
+    @if(!(UpcomingLaunches is null))
+    {
+        foreach(SpacexLaunch launch in UpcomingLaunches)
+        {
+            <div class="card text-white bg-dark mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">@launch.mission_name</h5>
+                    <p class="card-text">
+                        Launch Date: @launch.launch_date_utc.ToString("dddd, dd MMMM yyyy HH:mm:ss") UTC<br />
+                        Vehicle: @launch.rocket.rocket_name
+                    </p>
+                </div>
+            </div>
+        }
+    }
+</div>
+
 
 @code {
 
     public const string NextLaunchURI = "https://api.spacexdata.com/v3/launches/next";
+    public const string UpcomingLaunchesURI = "https://api.spacexdata.com/v3/launches/upcoming";
 
     public SpacexLaunch NextLaunch;
+    public SpacexLaunch[] UpcomingLaunches;
 
     protected override async Task OnInitializedAsync()
     {
-        NextLaunch = await Http.GetJsonAsync<SpacexLaunch>(NextLaunchURI);
+        Task<SpacexLaunch> NextLaunchTask = Http.GetJsonAsync<SpacexLaunch>(NextLaunchURI);
+        Task<SpacexLaunch[]> UpcomingLaunchesTask = Http.GetJsonAsync<SpacexLaunch[]>(UpcomingLaunchesURI);
+
+        NextLaunch = await NextLaunchTask;
+        UpcomingLaunches = await UpcomingLaunchesTask;
     }
 
     public class SpacexLaunch
