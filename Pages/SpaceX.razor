@@ -5,23 +5,41 @@
 
 <h1>SpaceX</h1>
 <h3>Next Launch</h3>
-<p>Mission Name: @NextLaunchName</p>
+@if (NextLaunch is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <ul>
+        <li>Mission Name: @NextLaunch.mission_name</li>
+        <li>Launch Date: @NextLaunch.launch_date_utc.ToString("dddd, dd MMMM yyyy HH:mm:ss") UTC</li>
+        <li>Vehicle: @NextLaunch.rocket.rocket_name</li>
+    </ul>
+    
+}
 
 @code {
 
     public const string NextLaunchURI = "https://api.spacexdata.com/v3/launches/next";
 
-    public string NextLaunchName = "Loading...";
+    public SpacexLaunch NextLaunch;
 
     protected override async Task OnInitializedAsync()
     {
-        SpacexLaunch NextLaunch = await Http.GetJsonAsync<SpacexLaunch>(NextLaunchURI);
-        NextLaunchName = NextLaunch.mission_name;
+        NextLaunch = await Http.GetJsonAsync<SpacexLaunch>(NextLaunchURI);
     }
 
     public class SpacexLaunch
     {
         public string mission_name { get; set; }
+        public DateTime launch_date_utc { get; set; }
+        public Rocket rocket { get; set; }
+
+        public class Rocket
+        {
+            public string rocket_name { get; set; }
+        }
     }
 
 }
