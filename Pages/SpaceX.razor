@@ -1,0 +1,22 @@
+﻿@using System.Net.Http
+@inject HttpClient Http
+
+@page "/spacex"
+
+<h1>SpaceX</h1>
+<h3>Next Launch</h3>
+<p>Mission Name: @NextLaunchName</p>
+
+@code {
+
+    public const string NextLaunchURI = "https://api.spacexdata.com/v3/launches/next";
+
+    public string NextLaunchName = "Loading...";
+
+    protected override async Task OnInitializedAsync()
+    {
+        SpacexLaunch NextLaunch = await Http.GetJsonAsync<SpacexLaunch>(NextLaunchURI);
+        NextLaunchName = NextLaunch.mission_name;
+    }
+
+}
