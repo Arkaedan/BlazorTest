@@ -6,35 +6,27 @@
 <h1>SpaceX</h1>
 
 <div>
-    <h3>Upcoming Launches</h3>
+    <h3>Launches</h3>
 
-    <div class="card text-white bg-dark mb-3">
-        <div class="card-header">
-            <ul class="nav nav-pills card-header-pills">
-                <li class="nav-item w-50 text-center">
-                    <a class="w-25 text-center mx-auto nav-link @((VisibleLaunches == UpcomingLaunches) ? "active" : "")" @onclick="(() => VisibleLaunches = UpcomingLaunches)">Upcoming Launches</a>
-                </li>
-                <li class="nav-item w-50 text-center">
-                    <a class="w-25 text-center mx-auto nav-link @((VisibleLaunches == PastLaunches) ? "active" : "")" @onclick="(() => VisibleLaunches = PastLaunches)">Past Launches</a>
-                </li>
-            </ul>
-        </div>
-        @if (!(UpcomingLaunches is null))
+    <button class="btn text-light m-1 @((VisibleLaunches == UpcomingLaunches && UpcomingLaunches != null) ? "btn-primary" : "")" @onclick="(() => VisibleLaunches = UpcomingLaunches)">Upcoming Launches</button>
+
+    <button class="btn text-light m-1 @((VisibleLaunches == PastLaunches && PastLaunches != null) ? "btn-primary" : "")" @onclick="(() => VisibleLaunches = PastLaunches)">Past Launches</button>
+
+
+    @if (!(UpcomingLaunches is null))
+    {
+        foreach (SpacexLaunch launch in VisibleLaunches)
         {
-            foreach (SpacexLaunch launch in VisibleLaunches)
-            {
-                <div class="card-body">
-                    <h5 class="card-title">@launch.mission_name</h5>
-                    <p class="card-text">
-                        Launch Date: @launch.launch_date_utc.ToString("dddd, dd MMMM yyyy HH:mm:ss") UTC<br />
-                        Vehicle: @launch.rocket.rocket_name
-                    </p>
-                </div>
-            }
+            <div class="card-body m-1 background-medium rounded">
+                <h5 class="card-title">@launch.mission_name</h5>
+                <p class="card-text">
+                    Launch Date: @launch.launch_date_utc.ToString("dddd, dd MMMM yyyy HH:mm:ss") UTC<br />
+                    Vehicle: @launch.rocket.rocket_name
+                </p>
+            </div>
         }
-    </div>
+    }
 
-    
 </div>
 
 
@@ -44,18 +36,22 @@
     public const string PastLaunchesURI = "https://api.spacexdata.com/v3/launches/past";
     public const string UpcomingLaunchesURI = "https://api.spacexdata.com/v3/launches/upcoming";
 
-    public SpacexLaunch[] VisibleLaunches;
-    public SpacexLaunch[] PastLaunches;
-    public SpacexLaunch[] UpcomingLaunches;
+    public static SpacexLaunch[] VisibleLaunches;
+    public static SpacexLaunch[] PastLaunches;
+    public static SpacexLaunch[] UpcomingLaunches;
 
     protected override async Task OnInitializedAsync()
     {
-        Task<SpacexLaunch[]> PastLaunchesTask = Http.GetJsonAsync<SpacexLaunch[]>(PastLaunchesURI);
-        Task<SpacexLaunch[]> UpcomingLaunchesTask = Http.GetJsonAsync<SpacexLaunch[]>(UpcomingLaunchesURI);
+        if (UpcomingLaunches is null || PastLaunches is null)
+        {
+            Task<SpacexLaunch[]> PastLaunchesTask = Http.GetJsonAsync<SpacexLaunch[]>(PastLaunchesURI);
+            Task<SpacexLaunch[]> UpcomingLaunchesTask = Http.GetJsonAsync<SpacexLaunch[]>(UpcomingLaunchesURI);
 
-        PastLaunches = (await PastLaunchesTask).Reverse().ToArray();
-        UpcomingLaunches = await UpcomingLaunchesTask;
-        VisibleLaunches = UpcomingLaunches;
+            PastLaunches = (await PastLaunchesTask).Reverse().ToArray();
+            UpcomingLaunches = await UpcomingLaunchesTask;
+            VisibleLaunches = UpcomingLaunches;
+        }
+        
     }
 
     public class SpacexLaunch

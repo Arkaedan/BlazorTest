@@ -12,6 +12,10 @@ app {
     flex-direction: column;
 }
 
+.background-medium {
+    background-color: #333333;
+}
+
 .top-row {
     height: 3.5rem;
     display: flex;
