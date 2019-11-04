@@ -52,22 +52,22 @@ function showAddToHomeScreen() {
     pwaInstallPrompt.style.borderRadius = '4px';
 
     pwaInstallButton.style.marginLeft = 'auto';
-    pwaInstallButton.style.width = '4em';
+    pwaInstallButton.style.width = '5em';
     pwaInstallButton.style.backgroundColor = '#00796B';
     pwaInstallButton.style.color = 'white';
     pwaInstallButton.style.border = 'none';
     pwaInstallButton.style.borderRadius = '25px';
 
     pwaCancelButton.style.marginLeft = '0.3rem';
-    pwaCancelButton.style.width = '4em';
+    pwaCancelButton.style.width = '5em';
     pwaCancelButton.style.backgroundColor = '#9d0d0d';
     pwaCancelButton.style.color = 'white';
     pwaCancelButton.style.border = 'none';
     pwaCancelButton.style.borderRadius = '25px';
 
     pwaInstallPrompt.innerText = 'Add to your homescreen?';
-    pwaInstallButton.innerText = 'ok';
-    pwaCancelButton.innerText = 'no';
+    pwaInstallButton.innerText = 'Add';
+    pwaCancelButton.innerText = 'Dismiss';
 
     pwaInstallPrompt.appendChild(pwaInstallButton);
     pwaInstallPrompt.appendChild(pwaCancelButton);
