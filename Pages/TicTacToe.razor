@@ -4,19 +4,57 @@
 <div class="container h-100">
     <div class="row h-100  justify-content-center align-items-center">
         <div class="ttt-grid-container">
-            <div class="ttt-grid-item">1</div>
-            <div class="ttt-grid-item">2</div>
-            <div class="ttt-grid-item">3</div>
-            <div class="ttt-grid-item">4</div>
-            <div class="ttt-grid-item">5</div>
-            <div class="ttt-grid-item">6</div>
-            <div class="ttt-grid-item">7</div>
-            <div class="ttt-grid-item">8</div>
-            <div class="ttt-grid-item">9</div>
+            @for (int y = 0; y < 3; y++)
+            {
+                for (int x = 0; x < 3; x++)
+                {
+                    int tempX = x;
+                    int tempY = y;
+
+                    <div class="ttt-grid-item" @onclick="@(() => PlaceCross(tempX, tempY))">
+                        <span class="fas m-0 fa-3x @GetIconString(Tiles[x, y])"></span>
+                    </div>
+                }
+            }
         </div>
     </div>
 </div>
 
 @code {
+    public enum Tile { Empty, Cross, Circle }
+
+    public static Tile[,] Tiles;
+
+    protected override void OnInitialized()
+    {
+        if (Tiles is null)
+        {
+            Tiles = new Tile[3, 3] {
+                { Tile.Empty, Tile.Empty, Tile.Empty },
+                { Tile.Empty, Tile.Empty, Tile.Empty },
+                { Tile.Empty, Tile.Empty, Tile.Empty }
+            };
+
+        }
+    }
+
+    public void PlaceCross(int x, int y)
+    {
+        System.Console.WriteLine($"Clicked x: {x}, y: {y}");
+        if(Tiles[x,y] == Tile.Empty)
+        {
+            Tiles[x, y] = Tile.Cross;
+        }
+    }
+
+    public string GetIconString(Tile tile)
+    {
+        switch (tile)
+        {
+            case Tile.Cross: return "fa-times";
+            case Tile.Circle: return "fa-circle";
+            default: return "";
+        }
+    }
 
 }
