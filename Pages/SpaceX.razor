@@ -5,32 +5,41 @@
 @page "/spacex"
 
 <h1>SpaceX</h1>
-<h4>@completedLaunchesCount successfull launches</h4>
 
-<div>
-    <h3>Launches</h3>
+@if (Loading)
+{
+    <h3>Loading...</h3>
+}
+else
+{
+    <h4>@completedLaunchesCount successfull launches</h4>
 
-    <button class="btn text-light m-1 @((VisibleLaunches == UpcomingLaunches && UpcomingLaunches != null) ? "btn-primary" : "")" @onclick="(() => VisibleLaunches = UpcomingLaunches)">Upcoming Launches</button>
+    <div>
+        <h3>Launches</h3>
 
-    <button class="btn text-light m-1 @((VisibleLaunches == PastLaunches && PastLaunches != null) ? "btn-primary" : "")" @onclick="(() => VisibleLaunches = PastLaunches)">Past Launches</button>
+        <button class="btn text-light m-1 @((VisibleLaunches == UpcomingLaunches && UpcomingLaunches != null) ? "btn-primary" : "")" @onclick="(() => VisibleLaunches = UpcomingLaunches)">Upcoming Launches</button>
+
+        <button class="btn text-light m-1 @((VisibleLaunches == PastLaunches && PastLaunches != null) ? "btn-primary" : "")" @onclick="(() => VisibleLaunches = PastLaunches)">Past Launches</button>
 
 
-    @if (!(UpcomingLaunches is null))
-    {
-        foreach (SpacexLaunch launch in VisibleLaunches)
+        @if (!(UpcomingLaunches is null))
         {
-            <div class="card-body m-1 background-medium rounded">
-                <h5 class="card-title">@launch.mission_name</h5>
-                <p class="card-text">
-                    Launch Date: @launch.launch_date_utc.ToString("dddd, dd MMMM yyyy HH:mm:ss") UTC<br />
-                    Vehicle: @launch.rocket.rocket_name<br />
-                    @launch.details
-                </p>
-            </div>
+            foreach (SpacexLaunch launch in VisibleLaunches)
+            {
+                <div class="card-body m-1 background-medium rounded">
+                    <h5 class="card-title">@launch.mission_name</h5>
+                    <p class="card-text">
+                        Launch Date: @launch.launch_date_utc.ToString("dddd, dd MMMM yyyy HH:mm:ss") UTC<br />
+                        Vehicle: @launch.rocket.rocket_name<br />
+                        @launch.details
+                    </p>
+                </div>
+            }
         }
-    }
 
-</div>
+    </div>
+}
+
 
 
 @code {
@@ -45,10 +54,14 @@
 
     public static int completedLaunchesCount;
 
+    public bool Loading = false;
+
     protected override async Task OnInitializedAsync()
     {
         if (UpcomingLaunches is null || PastLaunches is null)
         {
+            Loading = true;
+
             Task<SpacexLaunch[]> PastLaunchesTask = Http.GetJsonAsync<SpacexLaunch[]>(PastLaunchesURI);
             Task<SpacexLaunch[]> UpcomingLaunchesTask = Http.GetJsonAsync<SpacexLaunch[]>(UpcomingLaunchesURI);
 
@@ -57,6 +70,8 @@
             VisibleLaunches = UpcomingLaunches;
 
             completedLaunchesCount = PastLaunches.Where(launch => launch.launch_success == true).Count();
+
+            Loading = false;
         }
     }
 
