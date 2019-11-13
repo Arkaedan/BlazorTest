@@ -153,3 +153,29 @@ app {
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+.ttt-grid-container {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    padding: 5px;
+    height: 400px;
+    width: 400px;
+    background-color: darkorange;
+    border-radius: 4px;
+}
+
+.ttt-grid-item {
+    border-radius: 4px;
+    padding: 20px;
+    font-size: 30px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 2px;
+    background-color: #555555;
+}
+
+.ttt-grid-item:hover {
+    background-color: #777777;
+}
