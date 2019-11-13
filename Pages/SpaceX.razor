@@ -47,6 +47,7 @@ else
     public const string NextLaunchURI = "https://api.spacexdata.com/v3/launches/next";
     public const string PastLaunchesURI = "https://api.spacexdata.com/v3/launches/past";
     public const string UpcomingLaunchesURI = "https://api.spacexdata.com/v3/launches/upcoming";
+    public const string LaunchesURI = "https://api.spacexdata.com/v3/launches";
 
     public static SpacexLaunch[] VisibleLaunches;
     public static SpacexLaunch[] PastLaunches;
@@ -62,11 +63,12 @@ else
         {
             Loading = true;
 
-            Task<SpacexLaunch[]> PastLaunchesTask = Http.GetJsonAsync<SpacexLaunch[]>(PastLaunchesURI);
-            Task<SpacexLaunch[]> UpcomingLaunchesTask = Http.GetJsonAsync<SpacexLaunch[]>(UpcomingLaunchesURI);
+            System.Console.WriteLine("Requesting launch data from SpaceX Data API");
+            SpacexLaunch[] launches = await Http.GetJsonAsync<SpacexLaunch[]>(LaunchesURI);
+            System.Console.WriteLine("Received launch data from SpaceX Data API");
 
-            PastLaunches = (await PastLaunchesTask).Reverse().ToArray();
-            UpcomingLaunches = await UpcomingLaunchesTask;
+            PastLaunches = launches.Where(l => !l.upcoming).Reverse().ToArray();
+            UpcomingLaunches = launches.Where(l => l.upcoming).ToArray();
             VisibleLaunches = UpcomingLaunches;
 
             completedLaunchesCount = PastLaunches.Where(launch => launch.launch_success == true).Count();
@@ -82,6 +84,7 @@ else
         public DateTime launch_date_utc { get; set; }
         public Rocket rocket { get; set; }
         public bool? launch_success { get; set; }
+        public bool upcoming { get; set; }
 
         public class Rocket
         {
