@@ -1,9 +1,11 @@
 ﻿@using System.Net.Http
 @inject HttpClient Http
+@inject ILocalStorageService localStorage
 
 @page "/spacex"
 
 <h1>SpaceX</h1>
+<h4>@completedLaunchesCount successfull launches</h4>
 
 <div>
     <h3>Launches</h3>
@@ -21,7 +23,8 @@
                 <h5 class="card-title">@launch.mission_name</h5>
                 <p class="card-text">
                     Launch Date: @launch.launch_date_utc.ToString("dddd, dd MMMM yyyy HH:mm:ss") UTC<br />
-                    Vehicle: @launch.rocket.rocket_name
+                    Vehicle: @launch.rocket.rocket_name<br />
+                    @launch.details
                 </p>
             </div>
         }
@@ -40,6 +43,8 @@
     public static SpacexLaunch[] PastLaunches;
     public static SpacexLaunch[] UpcomingLaunches;
 
+    public static int completedLaunchesCount;
+
     protected override async Task OnInitializedAsync()
     {
         if (UpcomingLaunches is null || PastLaunches is null)
@@ -50,15 +55,18 @@
             PastLaunches = (await PastLaunchesTask).Reverse().ToArray();
             UpcomingLaunches = await UpcomingLaunchesTask;
             VisibleLaunches = UpcomingLaunches;
+
+            completedLaunchesCount = PastLaunches.Where(launch => launch.launch_success == true).Count();
         }
-        
     }
 
     public class SpacexLaunch
     {
         public string mission_name { get; set; }
+        public string details { get; set; }
         public DateTime launch_date_utc { get; set; }
         public Rocket rocket { get; set; }
+        public bool? launch_success { get; set; }
 
         public class Rocket
         {
