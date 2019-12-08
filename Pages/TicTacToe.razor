@@ -2,7 +2,17 @@
 
 <h1>TicTacToe</h1>
 <div class="container h-100">
-    <div class="row h-100  justify-content-center align-items-center">
+    <div class="h-100 row justify-content-center align-items-center">
+
+        @if (GameWinner == Tile.Cross)
+        {
+            <h3 class="m-2">You Won!</h3>
+        }
+        else if (GameWinner == Tile.Circle)
+        {
+            <h3>You Lost!</h3>
+        }
+
         <div class="ttt-grid-container">
             @for (int y = 0; y < 3; y++)
             {
@@ -12,11 +22,12 @@
                     int tempY = y;
 
                     <div class="ttt-grid-item" @onclick="@(() => PlaceCross(tempX, tempY))">
-                        <span class="fas m-0 fa-3x @GetIconString(Tiles[x, y])"></span>
+                        <span class="m-0 fa-3x @GetIconString(Tiles[x, y])"></span>
                     </div>
                 }
             }
         </div>
+        <button class="btn btn-danger m-2" @onclick="@(() => ClearBoard())">Reset Game</button>
     </div>
 </div>
 
@@ -25,25 +36,82 @@
 
     public static Tile[,] Tiles;
 
+    public Tile GameWinner = Tile.Empty;
+
     protected override void OnInitialized()
     {
         if (Tiles is null)
         {
-            Tiles = new Tile[3, 3] {
-                { Tile.Empty, Tile.Empty, Tile.Empty },
-                { Tile.Empty, Tile.Empty, Tile.Empty },
-                { Tile.Empty, Tile.Empty, Tile.Empty }
-            };
-
+            Tiles = new Tile[3, 3];
+            ClearBoard();
         }
     }
 
+    public bool BoardIsFull()
+    {
+        foreach (Tile tile in Tiles)
+        {
+            if (tile == Tile.Empty) return false;
+        }
+        return true;
+    }
+
+    public void ClearBoard()
+    {
+        for (int y = 0; y < 3; y++)
+        {
+            for (int x = 0; x < 3; x++)
+            {
+                Tiles[x, y] = Tile.Empty;
+            }
+        }
+
+        GameWinner = Tile.Empty;
+    }
+
+    // Circle is placed by the "AI"
+    public void PlaceCircle()
+    {
+        if (BoardIsFull()) return;
+
+        // Random placement
+        int x, y;
+        Random random = new Random();
+        do
+        {
+            x = random.Next(0, 3);
+            y = random.Next(0, 3);
+        }
+        while (Tiles[x, y] != Tile.Empty);
+
+        Tiles[x, y] = Tile.Circle;
+
+        // Check if player has won
+        if (ThreeInARow(Tile.Circle))
+        {
+            GameWinner = Tile.Circle;
+        }
+    }
+
+    // Cross is placed by user
     public void PlaceCross(int x, int y)
     {
         System.Console.WriteLine($"Clicked x: {x}, y: {y}");
+
+        if (GameWinner != Tile.Empty) return;
+
         if(Tiles[x,y] == Tile.Empty)
         {
             Tiles[x, y] = Tile.Cross;
+
+            // Check if player has won
+            if (ThreeInARow(Tile.Cross))
+            {
+                GameWinner = Tile.Cross;
+                return;
+            }
+
+            PlaceCircle();
         }
     }
 
@@ -51,10 +119,41 @@
     {
         switch (tile)
         {
-            case Tile.Cross: return "fa-times";
-            case Tile.Circle: return "fa-circle";
+            case Tile.Cross: return "fas fa-times";
+            case Tile.Circle: return "far fa-circle";
             default: return "";
         }
+    }
+
+    public bool ThreeInARow(Tile tileType)
+    {
+        // Check Rows
+        for (int y = 0; y < 3; y++)
+        {
+            if (Tiles[0, y] == tileType &&
+                Tiles[1, y] == tileType &&
+                Tiles[2, y] == tileType) return true;
+        }
+
+        // Check Columns
+        for (int x = 0; x < 3; x++)
+        {
+            if (Tiles[x, 0] == tileType &&
+                Tiles[x, 1] == tileType &&
+                Tiles[x, 2] == tileType) return true;
+        }
+
+        // Check Diagonals
+        if (Tiles[0, 0] == tileType &&
+            Tiles[1, 1] == tileType &&
+            Tiles[2, 2] == tileType) return true;
+
+        if (Tiles[0, 2] == tileType &&
+            Tiles[1, 1] == tileType &&
+            Tiles[2, 0] == tileType) return true;
+
+        // None found
+        return false;
     }
 
 }
