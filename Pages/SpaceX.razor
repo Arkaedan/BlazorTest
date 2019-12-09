@@ -43,9 +43,6 @@
     </div>
 
 
-
-
-
 @code {
 
     public const string LaunchesURI = "https://api.spacexdata.com/v3/launches";
@@ -62,6 +59,7 @@
     {
         if (UpcomingLaunches is null || PastLaunches is null)
         {
+            // Show loading message
             Loading = true;
 
             System.Console.WriteLine("Requesting launch data from SpaceX Data API");
@@ -72,8 +70,10 @@
             UpcomingLaunches = launches.Where(l => l.upcoming).ToArray();
             VisibleLaunches = UpcomingLaunches;
 
+            // Count successful launches
             completedLaunchesCount = PastLaunches.Where(launch => launch.launch_success == true).Count();
 
+            // Hide loading message
             Loading = false;
         }
     }
