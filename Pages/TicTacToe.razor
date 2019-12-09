@@ -1,20 +1,11 @@
 ﻿@page "/tictactoe"
 
 
-    <div class="container">
+    <div class="container text-center">
         <h1>TicTacToe</h1>
-        <div class="row justify-content-center align-items-center">
+        <div class="d-flex justify-content-center align-items-center">
 
-            @if (GameWinner == Tile.Cross)
-            {
-                <h3 class="m-2">You Won!</h3>
-            }
-            else if (GameWinner == Tile.Circle)
-            {
-                <h3>You Lost!</h3>
-            }
-
-            <div class="ttt-grid-container">
+            <div class="ttt-grid-container m-1">
                 @for (int y = 0; y < 3; y++)
                 {
                     for (int x = 0; x < 3; x++)
@@ -28,8 +19,9 @@
                     }
                 }
             </div>
-            <button class="btn btn-danger m-2" @onclick="@(() => ClearBoard())">Reset Game</button>
         </div>
+        <button class="btn btn-danger m-1" @onclick="@(() => ClearBoard())">Reset Game</button>
+        <h3 class="m-1">@(GetWinMessage())</h3>
     </div>
 
 @code {
@@ -68,6 +60,16 @@
         }
 
         GameWinner = Tile.Empty;
+    }
+
+    public string GetWinMessage()
+    {
+        switch (this.GameWinner)
+        {
+            case Tile.Cross: return "You Won!";
+            case Tile.Circle: return "You Lost!";
+            default: return "";
+        }
     }
 
     // Circle is placed by the "AI"
