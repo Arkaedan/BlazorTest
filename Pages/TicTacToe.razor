@@ -1,35 +1,36 @@
 ﻿@page "/tictactoe"
 
-<h1>TicTacToe</h1>
-<div class="container h-100">
-    <div class="h-100 row justify-content-center align-items-center">
 
-        @if (GameWinner == Tile.Cross)
-        {
-            <h3 class="m-2">You Won!</h3>
-        }
-        else if (GameWinner == Tile.Circle)
-        {
-            <h3>You Lost!</h3>
-        }
+    <div class="container">
+        <h1>TicTacToe</h1>
+        <div class="row justify-content-center align-items-center">
 
-        <div class="ttt-grid-container">
-            @for (int y = 0; y < 3; y++)
+            @if (GameWinner == Tile.Cross)
             {
-                for (int x = 0; x < 3; x++)
-                {
-                    int tempX = x;
-                    int tempY = y;
-
-                    <div class="ttt-grid-item" @onclick="@(() => PlaceCross(tempX, tempY))">
-                        <span class="m-0 fa-3x @GetIconString(Tiles[x, y])"></span>
-                    </div>
-                }
+                <h3 class="m-2">You Won!</h3>
             }
+            else if (GameWinner == Tile.Circle)
+            {
+                <h3>You Lost!</h3>
+            }
+
+            <div class="ttt-grid-container">
+                @for (int y = 0; y < 3; y++)
+                {
+                    for (int x = 0; x < 3; x++)
+                    {
+                        int tempX = x;
+                        int tempY = y;
+
+                        <div class="ttt-grid-item" @onclick="@(() => PlaceCross(tempX, tempY))">
+                            <span class="m-0 fa-3x @GetIconString(Tiles[x, y])"></span>
+                        </div>
+                    }
+                }
+            </div>
+            <button class="btn btn-danger m-2" @onclick="@(() => ClearBoard())">Reset Game</button>
         </div>
-        <button class="btn btn-danger m-2" @onclick="@(() => ClearBoard())">Reset Game</button>
     </div>
-</div>
 
 @code {
     public enum Tile { Empty, Cross, Circle }
