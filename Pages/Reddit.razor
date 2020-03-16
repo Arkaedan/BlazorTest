@@ -1,0 +1,78 @@
+﻿@page "/Reddit"
+@using System.Text.Json.Serialization
+@using System.Net.Http
+@inject HttpClient Http
+
+<h3>Reddit Front Page</h3>
+
+@if (!(Frontage is null))
+{
+    foreach (Post post in Frontage.Data.Children)
+    {
+        <div class="card-body m-1 background-medium rounded">
+            <h5 class="card-title"><a href="@post.Data.URL" target="_blank">@post.Data.Title</a></h5>
+            <p class="card-text">
+                Score: @post.Data.Score.ToString()<br />
+                Subreddit: @post.Data.Subreddit<br />
+            </p>
+        </div>
+    }
+}
+
+@code {
+
+    public const string FrontpageURI = "https://www.reddit.com/top.json";
+
+    public static Listing Frontage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Frontage is null)
+        {
+            Frontage = await Http.GetJsonAsync<Listing>(FrontpageURI);
+        }
+    }
+
+
+    public class PostData
+    {
+        [JsonPropertyName("title")]
+        public string Title { get; set; }
+        [JsonPropertyName("subreddit_name_prefixed")]
+        public string Subreddit { get; set; }
+        [JsonPropertyName("thumbnail")]
+        public string ThumbnailURL { get; set; }
+        [JsonPropertyName("url")]
+        public string URL { get; set; }
+        [JsonPropertyName("author")]
+        public string AuthorName { get; set; }
+        [JsonPropertyName("score")]
+        public int Score { get; set; }
+    }
+
+    public class Post
+    {
+        [JsonPropertyName("kind")]
+        public string Kind { get; set; }
+        [JsonPropertyName("data")]
+        public PostData Data { get; set; }
+    }
+
+    public class ListingData
+    {
+        [JsonPropertyName("modhash")]
+        public string Modhash { get; set; }
+        [JsonPropertyName("dist")]
+        public int Dist { get; set; }
+        [JsonPropertyName("children")]
+        public Post[] Children { get; set; }
+    }
+
+    public class Listing
+    {
+        [JsonPropertyName("kind")]
+        public string Kind { get; set; }
+        [JsonPropertyName("data")]
+        public ListingData Data { get; set; }
+    }
+}
